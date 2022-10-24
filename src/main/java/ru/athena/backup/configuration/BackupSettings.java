@@ -19,7 +19,7 @@ public class BackupSettings {
     private static final String SOURCE_DIRECTORY = "backup.directory.source";
 
     private final Properties properties;
-    private final Path backupDirectory;
+    private final Path targetDirectory;
     private final Path sourceDirectory;
 
     public static BackupSettings init() {
@@ -37,15 +37,15 @@ public class BackupSettings {
     private BackupSettings(Properties properties) {
         this.properties = properties;
         try {
-            this.backupDirectory = initBackupDirectory();
+            this.targetDirectory = initBackupDirectory();
             this.sourceDirectory = initSourceDirectory();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Incorrect jar path: " + e.getMessage());
         }
     }
 
-    public Path getBackupDirectory() {
-        return backupDirectory;
+    public Path getTargetDirectory() {
+        return targetDirectory;
     }
 
     public Path getSourceDirectory() {
@@ -69,7 +69,7 @@ public class BackupSettings {
         return properties.getProperty(INIT_CONFIG_MSG, "") +
                 System.lineSeparator() + "-------------------------" +
                 System.lineSeparator() + "BackupSettings:" +
-                System.lineSeparator() + "backupDirectory='" + backupDirectory + '\'' +
+                System.lineSeparator() + "backupDirectory='" + targetDirectory + '\'' +
                 System.lineSeparator() + "sourceDirectory='" + sourceDirectory + '\'' +
                 System.lineSeparator() + "-------------------------";
     }
