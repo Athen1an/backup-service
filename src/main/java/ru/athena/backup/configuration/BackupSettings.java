@@ -14,11 +14,12 @@ public class BackupSettings {
     private static final Logger logger = Logger.getLogger(BackupSettings.class.getName());
 
     private static final String CONFIG_FILE_NAME = "backup.config";
-    private static final String BACKUP_DIRECTORY = "backupDirectory";
-    private static final String SOURCE_DIRECTORY = "sourceDirectory";
+    private static final String INIT_CONFIG_MSG = "backup.config.init.message";
+    private static final String TARGET_DIRECTORY = "backup.directory.target";
+    private static final String SOURCE_DIRECTORY = "backup.directory.source";
 
     private final Properties properties;
-    private final Path backupDirectory;
+    private final Path targetDirectory;
     private final Path sourceDirectory;
 
     public static BackupSettings init() {
@@ -27,47 +28,49 @@ public class BackupSettings {
             FileReader fileReader = new FileReader(CONFIG_FILE_NAME);
             properties.load(fileReader);
         } catch (IOException e) {
-            logger.log(Level.WARNING, CONFIG_FILE_NAME + " not found: " + e.getMessage());
+            logger.log(Level.WARNING, "Error occurred while try to read config file with message: " + e.getMessage());
+            properties.setProperty(INIT_CONFIG_MSG, "configuration file was not loaded, default settings will be used");
         }
         return new BackupSettings(properties);
     }
 
-    public Path getBackupDirectory() {
-        return backupDirectory;
+    private BackupSettings(Properties properties) {
+        this.properties = properties;
+        try {
+            this.targetDirectory = initBackupDirectory();
+            this.sourceDirectory = initSourceDirectory();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Incorrect jar path: " + e.getMessage());
+        }
+    }
+
+    public Path getTargetDirectory() {
+        return targetDirectory;
     }
 
     public Path getSourceDirectory() {
         return sourceDirectory;
     }
 
-    private BackupSettings(Properties properties) {
-        this.properties = properties;
-        try {
-            this.backupDirectory = initBackupDirectory(properties);
-            this.sourceDirectory = initSourceDirectory(properties);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Incorrect jar path: " + e.getMessage());
-        }
-    }
-
-    private Path initBackupDirectory(Properties properties) throws URISyntaxException {
-        return properties.containsKey(BACKUP_DIRECTORY)
-                ? Paths.get(properties.getProperty(BACKUP_DIRECTORY))
+    private Path initBackupDirectory() throws URISyntaxException {
+        return this.properties.containsKey(TARGET_DIRECTORY)
+                ? Paths.get(properties.getProperty(TARGET_DIRECTORY))
                 : Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getParent().resolve("backup");
     }
 
-    private Path initSourceDirectory(Properties properties) throws URISyntaxException {
-        return properties.containsKey(SOURCE_DIRECTORY)
+    private Path initSourceDirectory() throws URISyntaxException {
+        return this.properties.containsKey(SOURCE_DIRECTORY)
                 ? Paths.get(properties.getProperty(SOURCE_DIRECTORY))
                 : Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
     }
 
     @Override
     public String toString() {
-        return "BackupSettings{" +
-                "properties=" + properties +
-                ", backupDirectory='" + backupDirectory + '\'' +
-                ", sourceDirectory='" + sourceDirectory + '\'' +
-                '}';
+        return properties.getProperty(INIT_CONFIG_MSG, "") +
+                System.lineSeparator() + "-------------------------" +
+                System.lineSeparator() + "BackupSettings:" +
+                System.lineSeparator() + "backupDirectory='" + targetDirectory + '\'' +
+                System.lineSeparator() + "sourceDirectory='" + sourceDirectory + '\'' +
+                System.lineSeparator() + "-------------------------";
     }
 }
