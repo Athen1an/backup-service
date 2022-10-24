@@ -20,7 +20,7 @@ public class CopyService {
                 try {
                     Files.createDirectory(targetDirectory);
                 } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Error occurred while create target directory", e);
+                    logger.log(Level.SEVERE, "Error occurred while create target directory.", e);
                     throw new RuntimeException(e.getMessage());
                 }
             }
@@ -31,13 +31,14 @@ public class CopyService {
                     try {
                         Files.copy(file.toPath(), Paths.get(targetDirectory.toString(), file.getName()), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Error occurred while copy file", e);
+                        logger.log(Level.SEVERE, "Error occurred while copy file.", e);
                         throw new RuntimeException(e.getMessage());
                     }
                 }
             }
+            logger.log(Level.INFO, "Backup finished.");
         } else {
-            logger.log(Level.INFO, "Source directory does not exist");
+            logger.log(Level.WARNING, "Source directory does not exist, backup didn't take place.");
         }
     }
 }
