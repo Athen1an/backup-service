@@ -25,19 +25,19 @@ public class CopyService {
             }
             logger.log(Level.INFO, "Backup finished.");
         } else {
-            logger.log(Level.WARNING, "Source directory does not exist, backup didn't take place.");
+            logger.log(Level.WARNING, "Source directory does not exist, backup did not take place.");
         }
     }
 
     private void copyFile(Path targetDirectory, File file) {
         if (file.isDirectory() || file.isHidden()) {
             Object[] loggingParams = {file.getName(), file.isHidden(), file.isDirectory()};
-            logger.log(Level.FINE, "File {0} wasn't copy because it's hidden={1} or directory={2}", loggingParams);
+            logger.log(Level.WARNING, "File {0} was not copy because it is hidden={1} or directory={2}", loggingParams);
         } else {
             try {
                 Files.copy(file.toPath(), Paths.get(targetDirectory.toString(), file.getName()), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error occurred while copy file.", e);
+                logger.log(Level.SEVERE, e, () -> String.format("Error occurred while copy file: %s", file.getName()));
                 throw new RuntimeException(e.getMessage());
             }
         }
