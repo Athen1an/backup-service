@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class CopyService {
 
     private static final Logger logger = Logger.getLogger(CopyService.class.getName());
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("'backup_'dd.MM.yy'_'kk-mm-ss")
+    private static final DateTimeFormatter folderNameFormatter = DateTimeFormatter.ofPattern("'backup_'dd.MM.yy'_'kk-mm-ss")
             .withZone(ZoneId.systemDefault());
 
     public void copy(Path sourceDirectory, Path targetDirectory) {
@@ -36,8 +36,8 @@ public class CopyService {
 
     private void copyFile(Path targetDirectory, File file) {
         if (file.isDirectory() || file.isHidden()) {
-            Object[] loggingParams = {file.getName(), file.isHidden(), file.isDirectory()};
-            logger.log(Level.WARNING, "File {0} was not copy because it is hidden={1} or directory={2}", loggingParams);
+            String copyWarnMsgTemplate = "File %s was not copy because it is hidden=%s or directory=%s";
+            logger.log(Level.WARNING, String.format(copyWarnMsgTemplate, file.getName(), file.isHidden(), file.isDirectory()));
         } else {
             try {
                 Files.copy(file.toPath(), Paths.get(targetDirectory.toString(), file.getName()), StandardCopyOption.REPLACE_EXISTING);
@@ -49,13 +49,13 @@ public class CopyService {
     }
 
     private Path createBackupDirectory(Path targetDirectory) {
-        Path resolve = targetDirectory.resolve(formatter.format(Instant.now()));
+        Path resolve = targetDirectory.resolve(folderNameFormatter.format(Instant.now()));
         if (resolve.toFile().exists()) return resolve;
 
         try {
             return Files.createDirectories(resolve);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while create backup directory.", e);
+            logger.log(Level.SEVERE, e, () -> String.format("Error occurred while create backup directory: %s", resolve));
             throw new RuntimeException(e.getMessage());
         }
     }

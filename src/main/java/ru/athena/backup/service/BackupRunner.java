@@ -25,7 +25,7 @@ public class BackupRunner {
         this.copyService = copyService;
         this.scanner = scanner;
 
-        logger.log(Level.INFO, "Application was running with configuration: {0}", backupSettings);
+        logger.log(Level.INFO, String.format("Application was running with configuration: %s", backupSettings));
     }
 
     public void run() {
@@ -33,10 +33,10 @@ public class BackupRunner {
 
         String action = scanner.next();
         switch (action) {
-            case "1" -> logger.log(Level.INFO, "Application configuration: {0}", backupSettings);
+            case "1" -> logger.log(Level.INFO, String.format("Application configuration: %s", backupSettings));
             case "2" -> copyService.copy(backupSettings.getSourceDirectory(), backupSettings.getTargetDirectory());
             case "3" -> System.exit(0);
-            default -> logger.log(Level.WARNING, "Action {0} not found.", action);
+            default -> logger.log(Level.WARNING, String.format("Action %s not found.", action));
         }
 
         run();

@@ -30,7 +30,7 @@ public class BackupSettings {
             FileReader fileReader = new FileReader(CONFIG_FILE_NAME);
             properties.load(fileReader);
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error occurred while try to read config file with message: " + e.getMessage());
+            logger.log(Level.WARNING, String.format("Error occurred while try to read config file with message: %s", e.getMessage()));
             properties.setProperty(INIT_CONFIG_MSG, "configuration file was not loaded, default settings will be used");
         }
         return new BackupSettings(properties);
