@@ -14,8 +14,7 @@ public class BackupRunner {
     private final CopyService copyService;
     private final Scanner scanner;
 
-    public static BackupRunner init() {
-        BackupSettings backupSettings = BackupSettings.init();
+    public static BackupRunner withSettings(BackupSettings backupSettings) {
         CopyService copyService = new CopyService();
         Scanner scanner = new Scanner(System.in);
         return new BackupRunner(backupSettings, copyService, scanner);
