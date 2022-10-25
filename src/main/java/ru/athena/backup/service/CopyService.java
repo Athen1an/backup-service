@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,15 +16,17 @@ import java.util.logging.Logger;
 public class CopyService {
 
     private static final Logger logger = Logger.getLogger(CopyService.class.getName());
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("'backup_'dd.MM.yy'_'kk-mm-ss")
+            .withZone(ZoneId.systemDefault());
 
     public void copy(Path sourceDirectory, Path targetDirectory) {
         File source = sourceDirectory.toFile();
         if (source.exists() && source.isDirectory()) {
-            createDirectory(targetDirectory);
+            Path backupDirectory = createBackupDirectory(targetDirectory);
 
             File[] files = Objects.requireNonNull(source.listFiles());
             for (File file : files) {
-                copyFile(targetDirectory, file);
+                copyFile(backupDirectory, file);
             }
             logger.log(Level.INFO, "Backup finished.");
         } else {
@@ -43,13 +48,14 @@ public class CopyService {
         }
     }
 
-    private void createDirectory(Path targetDirectory) {
-        if (targetDirectory.toFile().exists()) return;
+    private Path createBackupDirectory(Path targetDirectory) {
+        Path resolve = targetDirectory.resolve(formatter.format(Instant.now()));
+        if (resolve.toFile().exists()) return resolve;
 
         try {
-            Files.createDirectory(targetDirectory);
+            return Files.createDirectories(resolve);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while create target directory.", e);
+            logger.log(Level.SEVERE, "Error occurred while create backup directory.", e);
             throw new RuntimeException(e.getMessage());
         }
     }
