@@ -3,7 +3,6 @@ package ru.athena.backup.service;
 import ru.athena.backup.configuration.BackupSettings;
 
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BackupRunner {
@@ -48,7 +47,7 @@ public class BackupRunner {
     }
 
     private void run() {
-        logger.log(Level.INFO, getRunningMessage());
+        logger.info(getRunningMessage());
 
         String action = scanner.next();
         switch (action) {
