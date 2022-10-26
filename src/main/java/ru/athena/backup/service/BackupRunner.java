@@ -32,26 +32,31 @@ public class BackupRunner {
         this.scanner = scanner;
     }
 
-    public void run() {
+    public void start() {
+        logger.info(String.format("Application was running with configuration: %s", backupSettings));
+
+        run();
+    }
+
+    private void run() {
         logger.log(Level.INFO, getRunningMessage());
 
         String action = scanner.next();
         switch (action) {
-            case "1" -> logger.log(Level.INFO, String.format("Application configuration: %s", backupSettings));
+            case "1" -> logger.info(String.format("Application configuration: %s", backupSettings));
             case "2" -> {
                 copyService.copy(backupSettings.getSourceDirectory(), backupSettings.getTargetDirectory());
                 folderCountChecker.checkAndDeleteBackupFoldersOverCount();
             }
             case "3" -> System.exit(0);
-            default -> logger.log(Level.WARNING, String.format("Action %s not found.", action));
+            default -> logger.warning(String.format("Action %s not found.", action));
         }
 
         run();
     }
 
     private String getRunningMessage() {
-        return System.lineSeparator() + String.format("Application was running with configuration: %s", backupSettings) +
-                System.lineSeparator() + "Please, select next action: " +
+        return System.lineSeparator() + "Please, select next action: " +
                 System.lineSeparator() + "1. Read configuration." +
                 System.lineSeparator() + "2. Start backup." +
                 System.lineSeparator() + "3. Exit program.";

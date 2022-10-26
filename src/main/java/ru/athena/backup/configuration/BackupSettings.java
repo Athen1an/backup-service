@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BackupSettings {
@@ -30,7 +29,7 @@ public class BackupSettings {
             FileReader fileReader = new FileReader(CONFIG_FILE_NAME);
             properties.load(fileReader);
         } catch (IOException e) {
-            logger.log(Level.WARNING, String.format("Error occurred while try to read config file with message: %s", e.getMessage()));
+            logger.warning(String.format("Error occurred while try to read config file with message: %s", e.getMessage()));
             properties.setProperty(INIT_CONFIG_MSG, "configuration file was not loaded, default settings will be used");
         }
         return new BackupSettings(properties);

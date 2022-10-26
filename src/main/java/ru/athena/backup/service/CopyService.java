@@ -26,16 +26,16 @@ public class CopyService {
             for (File file : files) {
                 copyFile(backupDirectory, file);
             }
-            logger.log(Level.INFO, "Backup finished.");
+            logger.info("Backup finished.");
         } else {
-            logger.log(Level.WARNING, "Source directory does not exist, backup did not take place.");
+            logger.warning("Source directory does not exist, backup did not take place.");
         }
     }
 
     private void copyFile(Path targetDirectory, File file) {
         if (file.isDirectory() || file.isHidden()) {
             String copyWarnMsgTemplate = "File %s was not copy because it is hidden=%s or directory=%s";
-            logger.log(Level.WARNING, String.format(copyWarnMsgTemplate, file.getName(), file.isHidden(), file.isDirectory()));
+            logger.warning(String.format(copyWarnMsgTemplate, file.getName(), file.isHidden(), file.isDirectory()));
         } else {
             try {
                 Files.copy(file.toPath(), Paths.get(targetDirectory.toString(), file.getName()), StandardCopyOption.REPLACE_EXISTING);
