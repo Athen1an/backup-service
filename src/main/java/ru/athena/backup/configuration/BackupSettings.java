@@ -17,11 +17,13 @@ public class BackupSettings {
     private static final String BACKUP_TARGET_DIRECTORY = "backup.directory.target";
     private static final String BACKUP_SOURCE_DIRECTORY = "backup.directory.source";
     private static final String BACKUP_FOLDERS_COUNT = "backup.folders.count";
+    private static final String BACKUP_FORCE = "backup.force";
 
     private final Properties properties;
     private final Path targetDirectory;
     private final Path sourceDirectory;
     private final Integer backupFoldersCount;
+    private final Boolean isForceBackup;
 
     public static BackupSettings init() {
         Properties properties = new Properties();
@@ -40,7 +42,8 @@ public class BackupSettings {
         try {
             this.targetDirectory = initBackupDirectory();
             this.sourceDirectory = initSourceDirectory();
-            this.backupFoldersCount = initBackupFoldersCount();
+            this.backupFoldersCount = Integer.valueOf(properties.getProperty(BACKUP_FOLDERS_COUNT, "3"));
+            this.isForceBackup = Boolean.valueOf(properties.getProperty(BACKUP_FORCE, "false"));
         } catch (URISyntaxException e) {
             throw new RuntimeException("Incorrect jar path: " + e.getMessage());
         }
@@ -58,6 +61,10 @@ public class BackupSettings {
         return backupFoldersCount;
     }
 
+    public Boolean isForceBackup() {
+        return isForceBackup;
+    }
+
     private Path initBackupDirectory() throws URISyntaxException {
         return this.properties.containsKey(BACKUP_TARGET_DIRECTORY)
                 ? Paths.get(properties.getProperty(BACKUP_TARGET_DIRECTORY))
@@ -70,10 +77,6 @@ public class BackupSettings {
                 : Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
     }
 
-    private Integer initBackupFoldersCount() {
-        return Integer.valueOf(properties.getProperty(BACKUP_FOLDERS_COUNT, "3"));
-    }
-
     @Override
     public String toString() {
         return properties.getProperty(INIT_CONFIG_MSG, "") +
@@ -82,6 +85,7 @@ public class BackupSettings {
                 System.lineSeparator() + BACKUP_TARGET_DIRECTORY + "='" + targetDirectory + '\'' +
                 System.lineSeparator() + BACKUP_SOURCE_DIRECTORY + "='" + sourceDirectory + '\'' +
                 System.lineSeparator() + BACKUP_FOLDERS_COUNT + "='" + backupFoldersCount + '\'' +
+                System.lineSeparator() + BACKUP_FORCE + "='" + isForceBackup + '\'' +
                 System.lineSeparator() + "-------------------------";
     }
 }

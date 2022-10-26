@@ -35,7 +35,16 @@ public class BackupRunner {
     public void start() {
         logger.info(String.format("Application was running with configuration: %s", backupSettings));
 
-        run();
+        if (backupSettings.isForceBackup()) {
+            runImmediately();
+        } else {
+            run();
+        }
+    }
+
+    private void runImmediately() {
+        logger.info("Backup running immediately without delete over backup folders");
+        copyService.copy(backupSettings.getSourceDirectory(), backupSettings.getTargetDirectory());
     }
 
     private void run() {
