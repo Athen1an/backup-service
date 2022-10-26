@@ -7,17 +7,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static ru.athena.backup.configuration.BackupConstant.FOLDER_NAME_FORMATTER;
+
 public class CopyService {
 
     private static final Logger logger = Logger.getLogger(CopyService.class.getName());
-    private static final DateTimeFormatter folderNameFormatter = DateTimeFormatter.ofPattern("'backup_'dd.MM.yy'_'kk-mm-ss")
-            .withZone(ZoneId.systemDefault());
 
     public void copy(Path sourceDirectory, Path targetDirectory) {
         File source = sourceDirectory.toFile();
@@ -49,7 +47,7 @@ public class CopyService {
     }
 
     private Path createBackupDirectory(Path targetDirectory) {
-        Path resolve = targetDirectory.resolve(folderNameFormatter.format(Instant.now()));
+        Path resolve = targetDirectory.resolve(FOLDER_NAME_FORMATTER.format(Instant.now()));
         if (resolve.toFile().exists()) return resolve;
 
         try {
